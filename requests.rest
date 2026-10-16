@@ -1,0 +1,56 @@
+# VS Code REST Client requests. These are GraphQL HTTP requests, not REST routes.
+# Change renderBaseUrl to the actual Render origin after creating the service.
+# To target Render, change baseUrl below to {{renderBaseUrl}}.
+# AUTH_ENABLED=false: no login cookie is needed.
+@localBaseUrl = http://localhost:3000
+@renderBaseUrl = https://YOUR-SERVICE.onrender.com
+@baseUrl = {{localBaseUrl}}
+@studentId = S099
+
+### Local health
+GET {{localBaseUrl}}/health
+
+### Render health
+GET {{renderBaseUrl}}/health
+
+### Read all students
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+Origin: {{baseUrl}}
+
+{"query":"query { students { id studentId name lastName grade } }"}
+
+### Read by school ID (confirm this ID is unused before creating)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+Origin: {{baseUrl}}
+
+{"query":"query ($id: String!) { student(studentId: $id) { id studentId name lastName grade } }","variables":{"id":"{{studentId}}"}}
+
+### Create a demonstration student: run intentionally, only with an unused ID
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+Origin: {{baseUrl}}
+
+{"query":"mutation ($input: NewStudentInput!) { createStudent(input: $input) { id studentId name lastName grade } }","variables":{"input":{"studentId":"{{studentId}}","name":"Demo","lastName":"Student","sex":"Female","age":16,"class":"A","grade":10,"dob":"01-01-10"}}}
+
+### Update that demonstration student
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+Origin: {{baseUrl}}
+
+{"query":"mutation ($id: String!, $input: UpdateStudentInput!) { updateStudent(studentId: $id, input: $input) { id studentId grade } }","variables":{"id":"{{studentId}}","input":{"grade":11}}}
+
+### Delete only the demonstration student (blocked if mark records exist)
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+Origin: {{baseUrl}}
+
+{"query":"mutation ($id: String!) { deleteStudent(studentId: $id) }","variables":{"id":"{{studentId}}"}}
+
+### Read mark records
+POST {{baseUrl}}/graphql
+Content-Type: application/json
+Origin: {{baseUrl}}
+
+{"query":"query { markRecords { id studentId averageScore } }"}
