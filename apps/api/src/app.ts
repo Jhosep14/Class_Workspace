@@ -41,7 +41,8 @@ export function createApp({ apollo }: AppOptions) {
     <head><meta charset="utf-8">
     <title>Students GraphQL API</title>
     </head>
-    <body><main>
+    <body>
+    <main>
     <nav><a href="/docs">API documentation</a> · <a href="/graphql">GraphQL Explorer</a></nav>
 ${!env.AUTH_ENABLED ? ''
     : signedIn ? '<form method="post" action="/auth/logout"><button>Sign out</button></form>'
