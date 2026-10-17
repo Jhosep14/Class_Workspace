@@ -37,12 +37,13 @@ export function createApp({ apollo }: AppOptions) {
   app.get("/", (_req, res) => {
     const signedIn = Boolean(res.locals.currentUser);
     res.type("html").send(`<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Students GraphQL API</title></head>
-<body><main><h1>Students GraphQL API</h1>
-<p>${!env.AUTH_ENABLED ? "Classroom demo: OAuth is disabled. GraphQL operations do not require sign-in."
-    : signedIn ? "You are signed in." : "Sign in to access student and mark records."}</p>
-<nav><a href="/docs">API documentation</a> · <a href="/graphql">GraphQL endpoint</a></nav>
-${!env.AUTH_ENABLED ? '<p><a href="/api-docs">Open interactive GraphQL documentation</a></p>'
+    <html lang="en">
+    <head><meta charset="utf-8">
+    <title>Students GraphQL API</title>
+    </head>
+    <body><main>
+    <nav><a href="/docs">API documentation</a> · <a href="/graphql">GraphQL Explorer</a></nav>
+${!env.AUTH_ENABLED ? ''
     : signedIn ? '<form method="post" action="/auth/logout"><button>Sign out</button></form>'
     : '<p><a href="/auth/login">Sign in with Google</a></p>'}
 </main></body></html>`);

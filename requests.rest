@@ -1,10 +1,7 @@
 # VS Code REST Client requests. These are GraphQL HTTP requests, not REST routes.
-# Change renderBaseUrl to the actual Render origin after creating the service.
-# To target Render, change baseUrl below to {{renderBaseUrl}}.
-# AUTH_ENABLED=false: no login cookie is needed.
 @localBaseUrl = http://localhost:3000
-@renderBaseUrl = https://YOUR-SERVICE.onrender.com
-@baseUrl = {{localBaseUrl}}
+@renderBaseUrl = https://class-workspace.onrender.com
+@baseUrl = {{renderBaseUrl}}
 @studentId = S099
 
 ### Local health
