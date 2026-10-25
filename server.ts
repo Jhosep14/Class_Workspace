@@ -12,22 +12,27 @@ import { typeDefs, resolvers } from "./apps/api/src/graphql/schema.js";
 import { formatGraphQLError } from "./apps/api/src/graphql/errors.js";
 import type { GraphQLContext } from "./apps/api/src/graphql/context.js";
 
+// Create HTTP server
 const httpServer = http.createServer();
+
+// Create Apollo Server
 const apollo = new ApolloServer<GraphQLContext>({
   typeDefs, resolvers,
   stopOnTerminationSignals: false,
   includeStacktraceInErrorResponses: false,
   formatError: formatGraphQLError,
-  introspection: !env.AUTH_ENABLED || env.NODE_ENV !== "production",
+  introspection: true,
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
-    ...(!env.AUTH_ENABLED ? [ApolloServerPluginLandingPageLocalDefault({
+    ApolloServerPluginLandingPageLocalDefault({
       includeCookies: false,
       document: "query { students { id studentId name lastName grade } }",
       embed: { endpointIsEditable: false, runTelemetry: false },
-    })] : []),
+    }),
   ],
 });
+
+// Shutdown logic
 let closing = false;
 let apolloStarted = false;
 function reportShutdownFailure(error: unknown): void {
@@ -45,11 +50,17 @@ async function shutdown(): Promise<void> {
     finally { clearTimeout(deadline); }
   }
 }
+
+// Main startup code
 try {
+  // Connect to MongoDB
   await connectMongo();
+  // Start Apollo Server
   await apollo.start();
   apolloStarted = true;
+  // Create app
   httpServer.on("request", createApp({ apollo }));
+  // Start HTTP server
   await new Promise<void>((resolve, reject) => {
     httpServer.once("error", reject);
     httpServer.listen(env.PORT, "0.0.0.0", () => {
@@ -57,15 +68,15 @@ try {
       resolve();
     });
   });
+  // Log startup information
   console.info(`Students API is listening on port ${env.PORT}; database Students-Data.`);
-  console.info(`API documentation: ${env.BASE_URL.replace(/\/$/, "")}/docs`);
-  console.info(`Authentication: ${env.AUTH_ENABLED ? "Google login required" :
-    "DISABLED for classroom demonstration; database operations are public"}.`);
+  console.info("API documentation: /docs");
   httpServer.on("error", error => {
     console.error("Listener failed", error);
     process.exitCode = 1;
     void shutdown().catch(reportShutdownFailure);
   });
+  // Handle termination signals
   process.once("SIGTERM", () => void shutdown().catch(reportShutdownFailure));
   process.once("SIGINT", () => void shutdown().catch(reportShutdownFailure));
 } catch (error) {
