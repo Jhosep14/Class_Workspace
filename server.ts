@@ -2,6 +2,8 @@ import http from "node:http";
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from
   "@apollo/server/plugin/drainHttpServer";
+import { ApolloServerPluginLandingPageLocalDefault } from
+  "@apollo/server/plugin/landingPage/default";
 import { connectMongo } from "./apps/api/src/db/mongoose.js";
 import { createApp } from "./apps/api/src/app.js";
 import { typeDefs, resolvers } from "./apps/api/src/graphql/schema.js";
@@ -20,6 +22,8 @@ const apollo = new ApolloServer<GraphQLContext>({
   introspection: true,
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
+    // Keep Apollo Sandbox available on Render so authenticated demos can run operations.
+    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
   ],
 });
 
