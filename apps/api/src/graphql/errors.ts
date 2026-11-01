@@ -48,6 +48,8 @@ function isDuplicateKeyError(error: unknown): boolean {
 
 /** Codes that are safe to include in a client response. */
 const publicCodes = new Set([
+  // Preserve the intentional login-required response instead of masking it as a server error.
+  "UNAUTHENTICATED",
   "BAD_USER_INPUT",
   "NOT_FOUND",
   "CONFLICT",

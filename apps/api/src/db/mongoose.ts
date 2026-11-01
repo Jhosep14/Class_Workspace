@@ -1,8 +1,13 @@
 import mongoose from "mongoose";
-import { env } from "../config/env.js";
 
 export async function connectMongo(): Promise<void> {
-  await mongoose.connect(env.MONGODB_URI, {
+  const uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    throw new Error("MONGODB_URI is not defined");
+  }
+
+  await mongoose.connect(uri, {
     serverSelectionTimeoutMS: 10000,
     autoIndex: false,
     autoCreate: false,

@@ -9,10 +9,12 @@
   },
   "license": "ISC",
   "scripts": {
-    "dev": "node --env-file=.env --import=tsx --watch server.ts",
+    "dev": "npm run styles:build && node --env-file=.env --import=tsx --watch server.ts",
     "typecheck": "tsc --noEmit",
-    "build": "tsc",
+    "build": "npm run styles:build && tsc",
     "start": "node dist/server.js",
+    "styles:build": "mkdir -p dist/public && tailwindcss -i ./apps/api/src/styles.css -o ./dist/public/styles.css --minify",
+    "styles:watch": "mkdir -p dist/public && tailwindcss -i ./apps/api/src/styles.css -o ./dist/public/styles.css --watch",
     "indexes": "node --env-file=.env --import=tsx scripts/create-indexes.ts",
     "indexes:production": "node dist/scripts/create-indexes.js"
   },
@@ -20,14 +22,20 @@
     "@apollo/server": "^5.5.1",
     "@as-integrations/express5": "^1.1.2",
     "@graphql-tools/merge": "^9.2.8",
+    "connect-mongo": "^6.0.0",
     "express": "^5.3.0",
+    "express-session": "^1.19.0",
     "graphql": "^16.14.2",
+    "mongodb": "^7.8.0",
     "mongoose": "^9.11.2",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
     "@types/express": "^5.0.5",
+    "@types/express-session": "^1.19.0",
     "@types/node": "^24.0.0",
+    "tailwindcss": "^4.3.3",
     "tsx": "^4.0.0",
     "typescript": "^6.0.3"
   }

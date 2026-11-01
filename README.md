@@ -1,15 +1,15 @@
 ## Project layout
 
 ```text
-server.ts                           Startup, HTTP listener and graceful shutdown
+server.ts                           Startup, HTTP listener and graceful shutdown; PORT from process.env
 apps/api/src/
   app.ts                            Middleware order and endpoint registration
-  config/env.ts                     Validate environment; report names, not secrets
+  auth/github.routes.ts             GitHub OAuth start, callback, profile, and logout routes
   db/mongoose.ts                    One shared Students-Data connection
   middleware/errors.ts              Safe HTTP errors
   routes/health.routes.ts           Public database readiness endpoint
   routes/documentation.routes.ts    Public API reference and generated SDL
-  graphql/context.ts                Shared application services
+  graphql/context.ts                Session user and shared application services
   graphql/schema.ts                 Merge feature SDL and resolver maps
   graphql/errors.ts                 Expected errors and final error masking
   validators/student.ts             Student input rules
@@ -32,9 +32,28 @@ requests.rest                       Local and Render GraphQL HTTP requests
 render.yaml                         Backend-only Render Blueprint
 ```
 
+## GitHub sign-in configuration
+
+The API starts a GitHub OAuth login at `/auth/github`, handles GitHub's return at
+`/auth/github/callback`, and exposes the current session at `/auth/me`. Sign out
+with `POST /auth/logout`. Student and mark-record GraphQL operations require the
+GitHub session; the OAuth session is stored in MongoDB.
+
+Set the four GitHub/session variables from `.env.example` locally and in Render.
+Register the callback URL exactly as configured in the GitHub OAuth App:
+
+- Local: `http://localhost:4000/auth/github/callback`
+- Render: `https://class-workspace.onrender.com/auth/github/callback`
+
+Keep `GITHUB_CLIENT_SECRET` and `SESSION_SECRET` private. Do not commit the real
+`.env` file or paste either secret into chat.
+
 ## Official references
 
 - [Apollo Express 5 integration](https://www.apollographql.com/docs/apollo-server/api/express-middleware)
+- [GitHub OAuth Apps authorization](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps)
+- [Express session middleware](https://expressjs.com/en/resources/middleware/session/)
+- [connect-mongo session store](https://github.com/jdesboeufs/connect-mongo)
 - [Mongoose 9 migration](https://mongoosejs.com/docs/migrating_to_9.html)
 - [Mongoose transactions](https://mongoosejs.com/docs/transactions.html)
 - [Node 24 environment files](https://nodejs.org/download/release/latest-v24.x/docs/api/cli.html#--env-filefile)
