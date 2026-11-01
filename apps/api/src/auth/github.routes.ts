@@ -123,10 +123,7 @@ githubRouter.get("/github/callback", async (req, res) => {
     });
   });
 
-  res.status(200).json({
-    signedIn: true,
-    user: req.session.user,
-  });
+  res.redirect("/");
 });
 
 githubRouter.get("/me", (req, res) => {
