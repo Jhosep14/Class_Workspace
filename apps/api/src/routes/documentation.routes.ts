@@ -13,6 +13,10 @@ const httpRoutes = [
   ["GET", "/docs", "This API reference."],
   ["GET", "/docs/schema.graphql", "The GraphQL schema as plain text."],
   ["GET", "/api-docs", "Redirects to /graphql."],
+  ["GET", "/auth/github", "Starts GitHub sign-in."],
+  ["GET", "/auth/github/callback", "Verifies the OAuth callback and creates a session."],
+  ["GET", "/auth/me", "Returns the session user. The user field is null when signed out."],
+  ["POST", "/auth/logout", "Ends the session and returns HTTP 204."],
   ["GET / POST", "/graphql", "GraphQL Explorer and query/mutation endpoint."],
 ] as const;
 
@@ -50,6 +54,16 @@ td,th{border:1px solid #d9e1e8;text-align:left;padding:10px}th{background:#eaf1f
 <table><thead><tr><th>Method</th><th>Path</th><th>Behavior</th></tr></thead>
 <tbody>${httpRoutes.map(([method, path, meaning]) =>
     `<tr><td>${escapeHtml(method)}</td><td><code>${escapeHtml(path)}</code></td><td>${escapeHtml(meaning)}</td></tr>`).join("")}</tbody></table>
+<h2>Authentication</h2>
+<p>All student and mark record queries and mutations require a session created by signing in with GitHub.
+Apollo Sandbox sends the session cookie with your requests.</p>
+<ol>
+  <li><a href="/auth/github">Sign in with GitHub</a>.</li>
+  <li>Open <a href="/auth/me"><code>/auth/me</code></a> and confirm that <code>user</code> contains your GitHub account.</li>
+  <li>Run a query or mutation in <a href="/api-docs">Apollo Sandbox</a>.</li>
+</ol>
+<p>Requests without a valid session return <code>UNAUTHENTICATED</code>.
+Send <code>POST /auth/logout</code> to sign out.</p>
 <h2>GraphQL operations</h2>
 <table><thead><tr><th>Type</th><th>Field</th><th>Behavior</th></tr></thead>
 <tbody>${operations.map(([type, name, meaning]) =>

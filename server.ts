@@ -23,7 +23,10 @@ const apollo = new ApolloServer<GraphQLContext>({
   plugins: [
     ApolloServerPluginDrainHttpServer({ httpServer }),
     // Keep Apollo Sandbox available on Render so authenticated demos can run operations.
-    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    ApolloServerPluginLandingPageLocalDefault({
+      embed: true,
+      includeCookies: true,
+    }),
   ],
 });
 

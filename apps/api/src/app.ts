@@ -55,7 +55,15 @@ export function createApp({ apollo }: AppOptions) {
   // Mount the existing OAuth router under /auth; its callback is /auth/github/callback.
   app.use("/auth", githubRouter);
 
-  app.get("/", (_req, res) => {
+  app.get("/", (req, res) => {
+    const authButtonClass =
+      "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md bg-teal-300 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-teal-200";
+    const authButton = req.session.user
+      ? `<form action="/auth/logout?redirect=home" method="post">
+          <button class="${authButtonClass}" type="submit">Log out</button>
+        </form>`
+      : `<a class="${authButtonClass}" href="/auth/github">Sign in with GitHub</a>`;
+
     res.type("html").send(`<!doctype html>
     <html lang="en">
     <head>
@@ -84,11 +92,7 @@ export function createApp({ apollo }: AppOptions) {
               href="/graphql"
             >GraphQL Explorer</a>
           </div>
-          <!-- This starts the existing GitHub OAuth flow; it does not sign in to Apollo Sandbox. -->
-          <a
-            class="inline-flex min-h-11 items-center justify-center rounded-md bg-teal-300 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-teal-200 "
-            href="/auth/github"
-          >Sign in with GitHub</a>
+          ${authButton}
         </nav>
       </header>
       <main class="mx-auto max-w-5xl px-6 py-16 sm:py-20">

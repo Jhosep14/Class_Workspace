@@ -140,6 +140,10 @@ githubRouter.post("/logout", (req, res, next) => {
     }
 
     res.clearCookie("app.sid", { path: "/" });
+    if (req.query.redirect === "home") {
+      res.redirect(303, "/");
+      return;
+    }
     res.sendStatus(204);
   });
 });
