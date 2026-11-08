@@ -40,9 +40,10 @@ try {
   httpServer.on("request", createApp({ apollo }));
   // Start HTTP server
   const port = Number(process.env.PORT ?? 4000);
+  const host = process.env.API_HOST ?? "0.0.0.0";
   await new Promise<void>((resolve, reject) => {
     httpServer.once("error", reject);
-    httpServer.listen(port, "0.0.0.0", () => {
+    httpServer.listen(port, host, () => {
       httpServer.off("error", reject);
       resolve();
     });
